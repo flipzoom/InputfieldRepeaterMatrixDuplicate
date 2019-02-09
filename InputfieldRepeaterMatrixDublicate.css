@@ -1,0 +1,47 @@
+i.InputfieldRepeaterDublicate {
+    display: block;
+    float: right;
+    margin-right: 1rem !important;
+}
+
+div.InputfieldRepeaterDublicatePasteWrapper {
+    display: block;
+    text-align: right;
+    margin-bottom: .5rem;
+}
+
+button.InputfieldRepeaterDublicatePaste {
+    -webkit-animation: pulsingAnimation 1s infinite;
+    -moz-animation: pulsingAnimation 1s infinite;
+    -o-animation: pulsingAnimation 1s infinite;
+    animation: pulsingAnimation 1s infinite;
+    margin-right: 0 !important;
+}
+
+li.InputfieldRepeaterItem.in-clipboard > label.InputfieldHeader {
+    -webkit-animation: pulsingAnimation 1s infinite;
+    -moz-animation: pulsingAnimation 1s infinite;
+    -o-animation: pulsingAnimation 1s infinite;
+    animation: pulsingAnimation 1s infinite;
+}
+
+@keyframes pulsingAnimation {
+  0%   { opacity:1; }
+  50%  { opacity:.5; }
+  100% { opacity:1; }
+}
+@-o-keyframes pulsingAnimation {
+  0%   { opacity:1; }
+  50%  { opacity:.5; }
+  100% { opacity:1; }
+}
+@-moz-keyframes pulsingAnimation {
+  0%   { opacity:1; }
+  50%  { opacity:.5; }
+  100% { opacity:1; }
+}
+@-webkit-keyframes pulsingAnimation {
+  0%   { opacity:1; }
+  50%  { opacity:.5; }
+  100% { opacity:1; }
+}
