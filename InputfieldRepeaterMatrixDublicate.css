@@ -26,22 +26,22 @@ li.InputfieldRepeaterItem.in-clipboard > label.InputfieldHeader {
 }
 
 @keyframes pulsingAnimation {
-  0%   { opacity:1; }
-  50%  { opacity:.5; }
-  100% { opacity:1; }
+    0%   { opacity:1; }
+    50%  { opacity:.5; }
+    100% { opacity:1; }
 }
 @-o-keyframes pulsingAnimation {
-  0%   { opacity:1; }
-  50%  { opacity:.5; }
-  100% { opacity:1; }
+    0%   { opacity:1; }
+    50%  { opacity:.5; }
+    100% { opacity:1; }
 }
 @-moz-keyframes pulsingAnimation {
-  0%   { opacity:1; }
-  50%  { opacity:.5; }
-  100% { opacity:1; }
+    0%   { opacity:1; }
+    50%  { opacity:.5; }
+    100% { opacity:1; }
 }
 @-webkit-keyframes pulsingAnimation {
-  0%   { opacity:1; }
-  50%  { opacity:.5; }
-  100% { opacity:1; }
+    0%   { opacity:1; }
+    50%  { opacity:.5; }
+    100% { opacity:1; }
 }
