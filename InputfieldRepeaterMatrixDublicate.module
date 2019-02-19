@@ -41,7 +41,7 @@ class InputfieldRepeaterMatrixDublicate extends WireData implements Module {
             'summary'   => __('Proof of concept: This module allows you to clone a repeater item from one page to another. Currently only support for non nested items and from field to field with the same name.', __FILE__),
             'author'    => 'David Karich - FlipZoom Media Inc.',
             'href'      => 'https://www.flipzoom.de',
-            'version'   => 101,
+            'version'   => 102,
             'autoload'  => true,
             'singular'  => true,
             'icon'      => 'clipboard', 
@@ -136,6 +136,7 @@ class InputfieldRepeaterMatrixDublicate extends WireData implements Module {
             $targetPage         = wire('pages')->get($targetPageID);
             $sortOrder          = wireCount($targetPage->$fieldName) + 1;
             $sourcePage->sort   = $sortOrder;
+            $sourcePage->status = Page::statusUnpublished;
 
             // ------------------------------------------------------------------------
             // Clone item from source to target page
