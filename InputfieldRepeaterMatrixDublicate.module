@@ -45,7 +45,7 @@ class InputfieldRepeaterMatrixDublicate extends WireData implements Module {
             'autoload'  => true,
             'singular'  => true,
             'icon'      => 'clipboard', 
-            'requires'  => 'FieldtypeRepeaterMatrix'
+            'requires'  => array('ProcessWire>=3.0.80', 'FieldtypeRepeaterMatrix')
             );
     }
 
@@ -125,7 +125,7 @@ class InputfieldRepeaterMatrixDublicate extends WireData implements Module {
         // Check if target page and field is valid
         // ------------------------------------------------------------------------
         if($inputfield instanceof InputfieldRepeaterMatrix AND (string) $inputfield->name === (string) $data['rmdFieldName'] AND $data['rmdTargetPage'] AND $data['rmdSourceItem']) {
-            
+
             // ------------------------------------------------------------------------
             // Init vars and get pages
             // ------------------------------------------------------------------------
