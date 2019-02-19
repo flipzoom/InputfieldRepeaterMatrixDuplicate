@@ -41,7 +41,7 @@ class InputfieldRepeaterMatrixDublicate extends WireData implements Module {
             'summary'   => __('Proof of concept: This module allows you to clone a repeater item from one page to another. Currently only support for non nested items and from field to field with the same name.', __FILE__),
             'author'    => 'David Karich - FlipZoom Media Inc.',
             'href'      => 'https://www.flipzoom.de',
-            'version'   => 100,
+            'version'   => 101,
             'autoload'  => true,
             'singular'  => true,
             'icon'      => 'clipboard', 
@@ -75,7 +75,7 @@ class InputfieldRepeaterMatrixDublicate extends WireData implements Module {
             'labels' => array(
                 'dublicate' => $this->_x('Copy this item to the clipboard to paste into another page?', 'repeater-item-action'), 
                 'paste'     => $this->_x('Paste item', 'repeater-item-action'), 
-                'confirm'   => $this->_x('Are you sure you want to paste the item here? This will save the current page.', 'repeater-item-action'), 
+                'confirm'   => $this->_x('Are you sure you want to paste the item here? This will save the current page and inserts the item at the last position.', 'repeater-item-action'), 
                 'clipboard' => $this->_x('The Repeater Item has been copied to the clipboard. Go to another page with the same repeater field and paste it. Note: the current version of the item can only be copied if the page has been saved.', 'repeater-item-action')
             )
         ));
@@ -129,11 +129,13 @@ class InputfieldRepeaterMatrixDublicate extends WireData implements Module {
             // ------------------------------------------------------------------------
             // Init vars and get pages
             // ------------------------------------------------------------------------
-            $fieldName      = $data['rmdFieldName'];
-            $targetPageID   = (int) $data['rmdTargetPage'];
-            $sourcePageID   = (int) $data['rmdSourceItem'];
-            $sourcePage     = wire('pages')->get($sourcePageID);
-            $targetPage     = wire('pages')->get($targetPageID);
+            $fieldName          = $data['rmdFieldName'];
+            $targetPageID       = (int) $data['rmdTargetPage'];
+            $sourcePageID       = (int) $data['rmdSourceItem'];
+            $sourcePage         = wire('pages')->get($sourcePageID);
+            $targetPage         = wire('pages')->get($targetPageID);
+            $sortOrder          = wireCount($targetPage->$fieldName) + 1;
+            $sourcePage->sort   = $sortOrder;
 
             // ------------------------------------------------------------------------
             // Clone item from source to target page
