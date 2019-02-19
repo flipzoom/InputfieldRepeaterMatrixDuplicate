@@ -124,6 +124,14 @@ $(window).on('load', function(){
             }
         });
     }
+});
+
+/**
+ * ------------------------------------------------------------------------
+ * Bind paste function after window and DOM is ready
+ * ------------------------------------------------------------------------
+ */
+$(window).on('load focus', function(){
 
     // ------------------------------------------------------------------------
     // Inser paste button
@@ -142,7 +150,7 @@ $(window).on('load', function(){
         // ------------------------------------------------------------------------
         // Only show paste button on allowed pages and targets
         // ------------------------------------------------------------------------
-        if(currentPageID != RMD.rmdSourcePage && $('li.Inputfield_' + RMD.rmdAllowedTarget).length > 0) {
+        if(currentPageID != RMD.rmdSourcePage && $('li.Inputfield_' + RMD.rmdAllowedTarget).length > 0 && $('div.InputfieldRepeaterDublicatePasteWrapper').length <= 0) {
             
             // ------------------------------------------------------------------------
             // Init vars
