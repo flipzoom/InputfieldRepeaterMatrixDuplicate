@@ -180,6 +180,14 @@ $(window).on('load focus', function(){
                     $('button#submit_save, button#submit_save_unpublished').trigger('click');
                 });
             });
+
+        // ------------------------------------------------------------------------
+        // Else update current paste buttons with new IDs
+        // ------------------------------------------------------------------------
+        } else if(currentPageID != RMD.rmdSourcePage && $('li.Inputfield_' + RMD.rmdAllowedTarget).length > 0 && $('div.InputfieldRepeaterDublicatePasteWrapper').length > 0) {
+            $("input[name='rmdSourceItem']").val(RMD.rmdSourceItem);
+            $("input[name='rmdFieldName']").val(RMD.rmdAllowedTarget);
+            $("input[name='rmdTargetPage']").val(currentPageID);
         }
     }
 });
