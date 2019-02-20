@@ -4,8 +4,8 @@ Proof of concept: This module allows you to clone a repeater matrix item from on
 ## Check out the screencast
 https://www.youtube.com/watch?v=eYX10vmQPhY
 
-## Version update
-The current version 1.0.2 has some minor improvements. Items are inserted at the last position on the target page and set to the status unpublished. Furthermore, the clipboard is synchronized live, so you can jump between browser tabs without reloading the target page, for direct pasting.
+## Version update 1.0.2
+The current version 1.0.2 (1.0.3 InputfieldRepeaterMatrixDublicate.js) has some minor improvements. Items are inserted at the last position on the target page and set to the status unpublished. Furthermore, the clipboard is synchronized live, so you can jump between browser tabs without reloading the target page, for direct pasting.
 
 ### Be involved in the development
 Fork this module and improve it. It would be nice if this functionality is natively supported by the repeater matrix module. But not at the moment.
