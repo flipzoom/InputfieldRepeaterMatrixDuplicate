@@ -1,0 +1,281 @@
+<?php namespace ProcessWire;
+
+/**
+ * @author  FlipZoom Media Inc. - David Karich
+ * @contact David Karich <david.karich@flipzoom.de>
+ * @website www.flipzoom.de
+ * @create  2019-03-26
+ * @style   Tab size: 4 / Soft tabs: YES
+ * ----------------------------------------------------------------------------------
+ * @licence
+ * Copyright (c) 2019 FlipZoom Media Inc. - David Karich
+ * Permission is hereby granted, free of charge, to any person obtaining a copy 
+ * of this software and associated documentation files (the "Software"), to deal 
+ * in the Software without restriction, including without limitation the rights 
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+ * copies of the Software, and to permit persons to whom the Software is furnished 
+ * to do so, subject to the following conditions: The above copyright notice and 
+ * this permission notice shall be included in all copies or substantial portions 
+ * of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+ * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT 
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ----------------------------------------------------------------------------------
+ */
+
+class InputfieldRepeaterMatrixDuplicate extends WireData implements Module, ConfigurableModule {
+
+    /**
+     * ------------------------------------------------------------------------
+     * Module info
+     * ------------------------------------------------------------------------
+     * @return array
+     */
+    public static function getModuleInfo() {
+        return array(
+            'title'     => __('Repeater Matrix Item Duplicator', __FILE__),
+            'summary'   => __('With this module you can duplicate a RepeaterMatrix-Item from one page to another which has the same matrix field. Please check the Read Me for restrictions.', __FILE__),
+            'author'    => 'David Karich - FlipZoom Media Inc.',
+            'href'      => 'https://github.com/FlipZoomMedia/InputfieldRepeaterMatrixDuplicate',
+            'version'   => 104,
+            'autoload'  => 'template=admin',
+            'singular'  => true,
+            'icon'      => 'clipboard', 
+            'requires'  => array('ProcessWire>=3.0.80', 'FieldtypeRepeaterMatrix')
+            );
+    }
+
+    /**
+     * ------------------------------------------------------------------------
+     * Default configuration values
+     * ------------------------------------------------------------------------
+     * @return array
+     */
+    public static function getDefaultConfig() {
+        return array(
+            'excludeFields' => array(), 
+            'excludeRoles'  => array()
+        );
+    }
+
+    /**
+     * ------------------------------------------------------------------------
+     * Populate default configuration (will be overwritten after constructor 
+     * with user's own configuration)
+     * ------------------------------------------------------------------------
+     * @return object
+     */
+    public function __construct() {
+        foreach(self::getDefaultConfig() as $key => $value) {
+            $this->$key = $value;
+        }
+    }
+
+    /**
+     * ------------------------------------------------------------------------
+     * Build module configuration page
+     * ------------------------------------------------------------------------
+     * @param  array  $data
+     * @return mixed
+     */
+    static public function getModuleConfigInputfields(array $data) {
+        
+        // ------------------------------------------------------------------------
+        // Init vars
+        // ------------------------------------------------------------------------
+        $modules    = wire('modules');
+        $input      = wire('input');
+        $pwRoles    = wire('roles');
+        $pwFields   = wire('fields');
+
+        // ------------------------------------------------------------------------
+        // Build roles array
+        // ------------------------------------------------------------------------
+        foreach($pwRoles as $role) {
+            $roles[] = $role;
+        }
+
+        // ------------------------------------------------------------------------
+        // Build field array
+        // ------------------------------------------------------------------------
+        foreach($pwFields as $field) {
+            if(!$field->type instanceof FieldtypeRepeaterMatrix) continue;
+            $fields[] = $field;
+        }
+
+        // ------------------------------------------------------------------------
+        // Merge default config settings (custom values overwrite defaults)
+        // ------------------------------------------------------------------------
+        $defaults   = self::getDefaultConfig();
+        $data       = array_merge($defaults, $data);
+
+        // ------------------------------------------------------------------------
+        // On save actions
+        // ------------------------------------------------------------------------
+        if($input->post->submit_save_module) {
+            $excludeFields  = (array) $input->post->excludeFields;
+            $excludeRoles   = (array) $input->post->excludeRoles;
+        }
+
+        // ------------------------------------------------------------------------
+        // Build config screen form
+        // ------------------------------------------------------------------------
+        $form = new InputfieldWrapper();
+
+            // ------------------------------------------------------------------------
+            // Field select
+            // ------------------------------------------------------------------------
+            $field                  = $modules->get('InputfieldAsmSelect');
+            $field->name            = 'excludeFields';
+            $field->label           = __('Exclude Matrix Fields', __FILE__);
+            $field->icon            = 'cubes';
+            $field->columnWidth     = '100';
+            $field->description     = __('Optionally select RepeaterMatrix fields to be excluded.', __FILE__);
+            foreach($fields as $_field) $field->addOption($_field->name);
+            $field->value           = $data['excludeFields'];
+            $form->add($field);
+
+            // ------------------------------------------------------------------------
+            // Role select
+            // ------------------------------------------------------------------------
+            $field                  = $modules->get('InputfieldAsmSelect');
+            $field->name            = 'excludeRoles';
+            $field->label           = __('Exclude Roles', __FILE__);
+            $field->icon            = 'user-circle-o';
+            $field->columnWidth     = '100';
+            $field->description     = __('Optionally select roles to be excluded.', __FILE__);
+            foreach($roles as $role) $field->addOption($role->name);
+            $field->value           = $data['excludeRoles'];
+            $form->add($field);
+
+        // ------------------------------------------------------------------------
+        // Build form
+        // ------------------------------------------------------------------------
+        return $form;
+    }
+
+    /**
+     * ------------------------------------------------------------------------
+     * Initialize the repeaters inputfield
+     * ------------------------------------------------------------------------
+     */
+    public function init() {
+
+        // ------------------------------------------------------------------------
+        // Exclude certain roles
+        // ------------------------------------------------------------------------
+        $isAllowed = true;
+        if($this->user->isLoggedin()) {
+            foreach($this->user->roles as $role) {
+                if(in_array((string) $role->name, $this->excludeRoles)) {
+                    $isAllowed = false;
+                    break;
+                }
+            }
+        } else {
+            $isAllowed = false;
+        }
+
+        // ------------------------------------------------------------------------
+        // Bind hooks and scripts
+        // ------------------------------------------------------------------------
+        if($isAllowed) {
+
+            // ------------------------------------------------------------------------
+            // Load scripts
+            // ------------------------------------------------------------------------
+            $this->config->scripts->add($this->config->urls->InputfieldRepeaterMatrixDuplicate . "InputfieldRepeaterMatrixDuplicate.js");
+            $this->config->styles->add($this->config->urls->InputfieldRepeaterMatrixDuplicate . "InputfieldRepeaterMatrixDuplicate.css");
+
+            // ------------------------------------------------------------------------
+            // Bind hooks
+            // ------------------------------------------------------------------------
+            $this->addHookAfter('Inputfield::render', $this, 'render'); 
+            $this->addHookAfter('Inputfield::processInput', $this, 'processInput');
+
+            // ------------------------------------------------------------------------
+            // Bind translations for js functions
+            // ------------------------------------------------------------------------
+            $this->config->js('InputfieldRepeaterMatrixDuplicate', array(
+                'labels' => array(
+                    'duplicate' => $this->_x('Copy this item to the clipboard to paste into another page?', 'repeater-item-action'), 
+                    'paste'     => $this->_x('Paste item', 'repeater-item-action'), 
+                    'confirm'   => $this->_x('Are you sure you want to paste the item here? This will save the current page and inserts the item at the last position.', 'repeater-item-action'), 
+                    'clipboard' => $this->_x('The repeater item has been copied to the clipboard. Go to another page with the same repeater field and paste it. Note: the current version of the item can only be copied if the page has been saved.', 'repeater-item-action')
+                )
+            ));
+        }
+    }
+
+    /**
+     * ------------------------------------------------------------------------
+     * Bind data attributes to repeater items
+     * ------------------------------------------------------------------------
+     * @param  HookEvent $event
+     * @return HookEvent
+     */
+    public function render(HookEvent $event) {
+
+        // ------------------------------------------------------------------------
+        // Init event vars
+        // ------------------------------------------------------------------------
+        $inputfield = $event->object;
+        $pageID     = $this->sanitizer->int($this->input->id);
+
+        // ------------------------------------------------------------------------
+        // Only bind on repeater matrix field items and allowed fields
+        // ------------------------------------------------------------------------
+        if(!$inputfield instanceof InputfieldRepeaterMatrix OR in_array((string) $inputfield->name, $this->excludeFields)) return;
+
+        // ------------------------------------------------------------------------
+        // Render data attributes
+        // ------------------------------------------------------------------------
+        $event->return = str_replace("<li class='Inputfield", "<li data-rmd-target-field='{$inputfield->name}' data-rmd-current-page='{$pageID}' class='Inputfield", $event->return);
+    }
+
+    /**
+     * ------------------------------------------------------------------------
+     * Clone repeater item from on to another page
+     * ------------------------------------------------------------------------
+     * @param  HookEvent $event
+     */
+    public function processInput(HookEvent $event) {
+
+        // ------------------------------------------------------------------------
+        // Init vars
+        // ------------------------------------------------------------------------
+        $inputfield = $event->object; 
+        $data       = $event->arguments[0];
+
+        // ------------------------------------------------------------------------
+        // Check if target page and field is valid
+        // ------------------------------------------------------------------------
+        if($inputfield instanceof InputfieldRepeaterMatrix AND !in_array((string) $inputfield->name, $this->excludeFields) AND (string) $inputfield->name === (string) $data['rmdFieldName'] AND $data['rmdTargetPage'] AND $data['rmdSourceItem'] AND (string) $data['rmdPasteTrigger'] === "1") {
+
+            // ------------------------------------------------------------------------
+            // Init vars and get pages
+            // ------------------------------------------------------------------------
+            $fieldName          = $data['rmdFieldName'];
+            $targetPageID       = (int) $data['rmdTargetPage'];
+            $sourcePageID       = (int) $data['rmdSourceItem'];
+            $sourcePage         = wire('pages')->get($sourcePageID);
+            $targetPage         = wire('pages')->get($targetPageID);
+            $sortOrder          = wireCount($targetPage->$fieldName) + 1;
+            $sourcePage->sort   = $sortOrder;
+            $sourcePage->status = Page::statusUnpublished;
+
+            // ------------------------------------------------------------------------
+            // Clone item from source to target page
+            // ------------------------------------------------------------------------
+            if($sourcePage AND $targetPage) {
+                $targetPage->$fieldName->add($sourcePage);
+                $targetPage->$fieldName->save();
+            }
+        }
+    }
+
+}
