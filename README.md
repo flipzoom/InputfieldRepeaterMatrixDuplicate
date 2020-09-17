@@ -30,7 +30,7 @@ This module extends the commercial ProModule "[RepeaterMatrix](https://processwi
 2.0.0
 - Feature: Copy multiple items at once! The fundament for copying multiple items was created by [@Autofahrn](https://processwire.com/talk/profile/5384-autofahrn/) - THX!
 - Feature: Optionally you can disable the copy and/or paste dialog
-- Bug fix: A fix suggestion when additional and normal repeater fields are present was contributed by [@ngrmm](https://processwire.com/talk/profile/3649-ngrmm/) - THX!
+- Bug fix: A fix suggestion when additional and normal repeater fields are present was contributed by [@joshua](https://processwire.com/talk/profile/2208-joshua/) - THX!
 
 1.0.4
 - Bug fix: Various bug fixes and improvements in live synchronization

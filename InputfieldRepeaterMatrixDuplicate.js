@@ -25,7 +25,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ----------------------------------------------------------------------------------
  * @contributors: The fundament for copying multiple items was created by @Autofahrn - THX!
- * @contributors: A BugFix suggestion when additional repeater fields are present was contributed by @ngrmm - THX!
+ * @contributors: A BugFix suggestion when additional repeater fields are present was contributed by @joshua - THX!
  */
 
 /**
