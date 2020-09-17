@@ -5,7 +5,7 @@ This module extends the commercial ProModule "[RepeaterMatrix](https://processwi
 [![](http://img.youtube.com/vi/eYX10vmQPhY/0.jpg)](http://www.youtube.com/watch?v=eYX10vmQPhY)
 
 ## What the module can do
-- Duplicate a repeater item from one page to another
+- Duplicate multible repeater items from one page to another
 - No matter how complex the item is
 - Full support for file and image fields
 - Multilingual support
@@ -13,6 +13,7 @@ This module extends the commercial ProModule "[RepeaterMatrix](https://processwi
 - Live synchronization of clipboard between multiple browser tabs. Copy an item and simply switch the browser tab to the target page and you will immediately see the past button
 - Support of multiple RepeaterMatrix fields on one page
 - Configurable which roles and fields are excluded
+- Configurable dialogs for copy and paste
 - Duplicated items are automatically pasted to the end of the target field and set to hidden status so that changes are not directly published
 - Automatic clipboard update when other items are picked
 - Automatically removes old clipboard data if it is not pasted within 6 hours
@@ -26,6 +27,11 @@ This module extends the commercial ProModule "[RepeaterMatrix](https://processwi
 - Dynamic reloading and adding of repeater items cannot be registered. Several interfaces and events from the core are missing. The initialization occurs only once after the page load event
 
 ### Changelog
+2.0.0
+- Feature: Copy multiple items at once! The fundament for copying multiple items was created by [@Autofahrn](https://processwire.com/talk/profile/5384-autofahrn/) - THX!
+- Feature: Optionally you can disable the copy and/or paste dialog
+- Bug fix: A fix suggestion when additional and normal repeater fields are present was contributed by [@ngrmm](https://processwire.com/talk/profile/3649-ngrmm/) - THX!
+
 1.0.4
 - Bug fix: Various bug fixes and improvements in live synchronization
 - Bug fix: Items are no longer inserted when the normal save button is clicked. Only when the past button is explicitly clicked

@@ -5,10 +5,11 @@
  * @contact David Karich <david.karich@flipzoom.de>
  * @website www.flipzoom.de
  * @create  2019-03-26
+ * @updated 2020-09-17
  * @style   Tab size: 4 / Soft tabs: YES
  * ----------------------------------------------------------------------------------
  * @licence
- * Copyright (c) 2019 FlipZoom Media Inc. - David Karich
+ * Copyright (c) 2020 FlipZoom Media Inc. - David Karich
  * Permission is hereby granted, free of charge, to any person obtaining a copy 
  * of this software and associated documentation files (the "Software"), to deal 
  * in the Software without restriction, including without limitation the rights 
@@ -25,6 +26,8 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ----------------------------------------------------------------------------------
+ * @contributors: The fundament for copying multiple items was created by @Autofahrn - THX!
+ * @contributors: A BugFix suggestion when additional repeater fields are present was contributed by @ngrmm - THX!
  */
 
 class InputfieldRepeaterMatrixDuplicate extends WireData implements Module, ConfigurableModule {
@@ -38,10 +41,10 @@ class InputfieldRepeaterMatrixDuplicate extends WireData implements Module, Conf
     public static function getModuleInfo() {
         return array(
             'title'     => __('Repeater Matrix Item Duplicator', __FILE__),
-            'summary'   => __('With this module you can duplicate a RepeaterMatrix-Item from one page to another which has the same matrix field. Please check the Read Me for restrictions.', __FILE__),
+            'summary'   => __('With this module you can duplicate multible RepeaterMatrix-Items from one page to another which has the same matrix field. Please check the Read Me for restrictions.', __FILE__),
             'author'    => 'David Karich - FlipZoom Media Inc.',
             'href'      => 'https://github.com/FlipZoomMedia/InputfieldRepeaterMatrixDuplicate',
-            'version'   => 104,
+            'version'   => 200,
             'autoload'  => 'template=admin',
             'singular'  => true,
             'icon'      => 'clipboard', 
@@ -57,8 +60,10 @@ class InputfieldRepeaterMatrixDuplicate extends WireData implements Module, Conf
      */
     public static function getDefaultConfig() {
         return array(
-            'excludeFields' => array(), 
-            'excludeRoles'  => array()
+            'excludeFields'         => array(), 
+            'excludeRoles'          => array(), 
+            'disableCopyDialog'     => 0, 
+            'disablePasteDialog'    => 0
         );
     }
 
@@ -117,8 +122,10 @@ class InputfieldRepeaterMatrixDuplicate extends WireData implements Module, Conf
         // On save actions
         // ------------------------------------------------------------------------
         if($input->post->submit_save_module) {
-            $excludeFields  = (array) $input->post->excludeFields;
-            $excludeRoles   = (array) $input->post->excludeRoles;
+            $excludeFields      = (array) $input->post->excludeFields;
+            $excludeRoles       = (array) $input->post->excludeRoles;
+            $disableCopyDialog  = (int) $input->post->disableCopyDialog;
+            $disablePasteDialog = (int) $input->post->disablePasteDialog;
         }
 
         // ------------------------------------------------------------------------
@@ -150,6 +157,32 @@ class InputfieldRepeaterMatrixDuplicate extends WireData implements Module, Conf
             $field->description     = __('Optionally select roles to be excluded.', __FILE__);
             foreach($roles as $role) $field->addOption($role->name);
             $field->value           = $data['excludeRoles'];
+            $form->add($field);
+
+            // ------------------------------------------------------------------------
+            // Disable copy dialog
+            // ------------------------------------------------------------------------
+            $field                  = $modules->get('InputfieldCheckbox');
+            $field->name            = 'disableCopyDialog';
+            $field->label           = __('Disable copy dialog', __FILE__);
+            $field->icon            = 'window-maximize';
+            $field->columnWidth     = '50';
+            $field->description     = __('Disable the dialog before copying an item.', __FILE__);
+            $field->checked         = ($data['disableCopyDialog']) ? 'checked' : '';
+            $field->value           = $data['disableCopyDialog'];
+            $form->add($field);
+
+            // ------------------------------------------------------------------------
+            // Disable paste dialog
+            // ------------------------------------------------------------------------
+            $field                  = $modules->get('InputfieldCheckbox');
+            $field->name            = 'disablePasteDialog';
+            $field->label           = __('Disable paste dialog', __FILE__);
+            $field->icon            = 'window-maximize';
+            $field->columnWidth     = '50';
+            $field->description     = __('Disable the dialog before pasting an item.', __FILE__);
+            $field->checked         = ($data['disablePasteDialog']) ? 'checked' : '';
+            $field->value           = $data['disablePasteDialog'];
             $form->add($field);
 
         // ------------------------------------------------------------------------
@@ -186,10 +219,16 @@ class InputfieldRepeaterMatrixDuplicate extends WireData implements Module, Conf
         if($isAllowed) {
 
             // ------------------------------------------------------------------------
+            // Load module info
+            // ------------------------------------------------------------------------
+            $info       = $this->getModuleInfo();
+            $version    = $info['version'];
+
+            // ------------------------------------------------------------------------
             // Load scripts
             // ------------------------------------------------------------------------
-            $this->config->scripts->add($this->config->urls->InputfieldRepeaterMatrixDuplicate . "InputfieldRepeaterMatrixDuplicate.js");
-            $this->config->styles->add($this->config->urls->InputfieldRepeaterMatrixDuplicate . "InputfieldRepeaterMatrixDuplicate.css");
+            $this->config->scripts->add($this->config->urls->InputfieldRepeaterMatrixDuplicate . "InputfieldRepeaterMatrixDuplicate.js?v={$version}");
+            $this->config->styles->add($this->config->urls->InputfieldRepeaterMatrixDuplicate . "InputfieldRepeaterMatrixDuplicate.css?v={$version}");
 
             // ------------------------------------------------------------------------
             // Bind hooks
@@ -202,10 +241,14 @@ class InputfieldRepeaterMatrixDuplicate extends WireData implements Module, Conf
             // ------------------------------------------------------------------------
             $this->config->js('InputfieldRepeaterMatrixDuplicate', array(
                 'labels' => array(
-                    'duplicate' => $this->_x('Copy this item to the clipboard to paste into another page?', 'repeater-item-action'), 
-                    'paste'     => $this->_x('Paste item', 'repeater-item-action'), 
-                    'confirm'   => $this->_x('Are you sure you want to paste the item here? This will save the current page and inserts the item at the last position.', 'repeater-item-action'), 
-                    'clipboard' => $this->_x('The repeater item has been copied to the clipboard. Go to another page with the same repeater field and paste it. Note: the current version of the item can only be copied if the page has been saved.', 'repeater-item-action')
+                    'duplicate'     => $this->_x('Copy this item to the clipboard to paste into another page?', 'repeater-item-action'), 
+                    'paste'         => $this->_x('Paste item', 'repeater-item-action'), 
+                    'confirm'       => $this->_x('Are you sure you want to paste the item here? This will save the current page and inserts the item at the last position.', 'repeater-item-action'), 
+                    'clipboard'     => $this->_x('The repeater item has been copied to the clipboard. Go to another page with the same repeater field and paste it. Note: the current version of the item can only be copied if the page has been saved.', 'repeater-item-action')
+                ), 
+                'config' => array(
+                    'disableCopyDialog'     => ((int) $this->disableCopyDialog === 0) ? false : true, 
+                    'disablePasteDialog'    => ((int) $this->disablePasteDialog === 0) ? false : true
                 )
             ));
         }
@@ -254,28 +297,47 @@ class InputfieldRepeaterMatrixDuplicate extends WireData implements Module, Conf
         // ------------------------------------------------------------------------
         // Check if target page and field is valid
         // ------------------------------------------------------------------------
-        if($inputfield instanceof InputfieldRepeaterMatrix AND !in_array((string) $inputfield->name, $this->excludeFields) AND (string) $inputfield->name === (string) $data['rmdFieldName'] AND $data['rmdTargetPage'] AND $data['rmdSourceItem'] AND (string) $data['rmdPasteTrigger'] === "1") {
+        if($inputfield instanceof InputfieldRepeaterMatrix AND 
+           !in_array((string) $inputfield->name, $this->excludeFields) AND 
+           (string) $inputfield->name === (string) $data['rmdFieldName'] AND 
+           $data['rmdTargetPage'] AND 
+           $data['rmdSourceItems'] AND 
+           (string) $data['rmdPasteTrigger'] === "1") {
 
             // ------------------------------------------------------------------------
             // Init vars and get pages
             // ------------------------------------------------------------------------
             $fieldName          = $data['rmdFieldName'];
             $targetPageID       = (int) $data['rmdTargetPage'];
-            $sourcePageID       = (int) $data['rmdSourceItem'];
-            $sourcePage         = wire('pages')->get($sourcePageID);
             $targetPage         = wire('pages')->get($targetPageID);
             $sortOrder          = wireCount($targetPage->$fieldName) + 1;
-            $sourcePage->sort   = $sortOrder;
-            $sourcePage->status = Page::statusUnpublished;
+            $sourcePages        = explode(',', (string) $data['rmdSourceItems']);
+            $itemCounter        = 0;
 
             // ------------------------------------------------------------------------
-            // Clone item from source to target page
+            // Check if items are present, then process each item individually and 
+            // clone it to the target page
             // ------------------------------------------------------------------------
-            if($sourcePage AND $targetPage) {
-                $targetPage->$fieldName->add($sourcePage);
-                $targetPage->$fieldName->save();
+            if(is_array($sourcePages) AND wireCount($sourcePages) > 0) {
+                foreach($sourcePages as $_sourcePage) {
+                    $sourcePage         = wire('pages')->get((int) $_sourcePage);
+                    $sourcePage->sort   = ($sortOrder + $itemCounter);
+                    $sourcePage->status = Page::statusUnpublished;
+
+                    // ------------------------------------------------------------------------
+                    // Clone item from source to target page
+                    // ------------------------------------------------------------------------
+                    if($sourcePage AND $targetPage) {
+                        $targetPage->$fieldName->add($sourcePage);
+                        $targetPage->$fieldName->save();
+                    }
+
+                    // ------------------------------------------------------------------------
+                    // Increment sort order item counter
+                    // ------------------------------------------------------------------------
+                    $itemCounter++;
+                }
             }
         }
     }
-
 }

@@ -3,10 +3,11 @@
  * @contact David Karich <david.karich@flipzoom.de>
  * @website www.flipzoom.de
  * @create  2019-03-26
+ * @updated 2020-09-17
  * @style   Tab size: 4 / Soft tabs: YES
  * ----------------------------------------------------------------------------------
  * @licence
- * Copyright (c) 2019 FlipZoom Media Inc. - David Karich
+ * Copyright (c) 2020 FlipZoom Media Inc. - David Karich
  * Permission is hereby granted, free of charge, to any person obtaining a copy 
  * of this software and associated documentation files (the "Software"), to deal 
  * in the Software without restriction, including without limitation the rights 
@@ -23,6 +24,8 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ----------------------------------------------------------------------------------
+ * @contributors: The fundament for copying multiple items was created by @Autofahrn - THX!
+ * @contributors: A BugFix suggestion when additional repeater fields are present was contributed by @ngrmm - THX!
  */
 
 /**
@@ -36,12 +39,12 @@ $(window).on('load', function(){
     // ------------------------------------------------------------------------
     // Bind function icon and event only if item controls are populated
     // ------------------------------------------------------------------------
-    if($('span.InputfieldRepeaterItemControls').length > 0) {
+    if($('li.InputfieldRepeaterMatrix span.InputfieldRepeaterItemControls').length > 0) {
 
         // ------------------------------------------------------------------------
         // Init vars
         // ------------------------------------------------------------------------
-        var $itemControls       = $('span.InputfieldRepeaterItemControls > i.InputfieldRepeaterClone'), 
+        var $itemControls       = $('li.InputfieldRepeaterMatrix span.InputfieldRepeaterItemControls > i.InputfieldRepeaterClone'), 
             $duplicateFunction  = $('<i class="fa fa-clipboard InputfieldRepeaterDuplicate"></i>'), 
             pwConfig            = ProcessWire.config.InputfieldRepeaterMatrixDuplicate;
 
@@ -72,13 +75,13 @@ $(window).on('load', function(){
                 // source page and item
                 // ------------------------------------------------------------------------
                 try {
-                    if(RMD.rmdSourceItem == $(this).closest('.InputfieldRepeaterItem').attr('data-page')) {
+                    if(RMD.rmdSourceItems.includes(parseInt($(this).closest('.InputfieldRepeaterItem').attr('data-page')))) {
                         $(this).closest('.InputfieldRepeaterItem').addClass('in-clipboard');
                     }
                 } catch(e) {}
 
                 // ------------------------------------------------------------------------
-                // Dont binde events and remove function if source matrix item is a 
+                // Dont bind events and remove function if source matrix item is a 
                 // nested repeater. Nested repeaters are currently not supported!
                 // ------------------------------------------------------------------------
                 if($(this).closest('.InputfieldRepeaterItem').attr('data-rmd-target-field').match(/repeater[\w-]*\b$/g)) {
@@ -96,25 +99,76 @@ $(window).on('load', function(){
                         // ------------------------------------------------------------------------
                         var $this           = $(this), 
                             $repeaterItem   = $(this).closest('.InputfieldRepeaterItem'), 
-                            $repeaterItems  = $('.InputfieldRepeaterItem');
+                            $repeaterItems  = $('.InputfieldRepeaterItem'), 
+                            sourceItems     = [],
+                            itemsAdded      = false;
 
                         // ------------------------------------------------------------------------
                         // If clicked item twice, remove from clipboard
                         // ------------------------------------------------------------------------
                         if($repeaterItem.hasClass('in-clipboard')) {
-                            $repeaterItems.removeClass('in-clipboard');
-                            localStorage.removeItem('rmd-clipboard');
+                            $repeaterItem.removeClass('in-clipboard');
 
                         // ------------------------------------------------------------------------
                         // Else save item to clipboard
                         // ------------------------------------------------------------------------
                         } else {
+
+                            // ------------------------------------------------------------------------
+                            // Remove wrapper and add clipboard indicator
+                            // ------------------------------------------------------------------------
                             $('.InputfieldRepeaterDuplicatePasteWrapper').remove();
-                            $repeaterItems.removeClass('in-clipboard');
                             $repeaterItem.addClass('in-clipboard');
-                            ProcessWire.alert(pwConfig.labels.clipboard);
+                            itemsAdded = true;
+                        }
+
+                        // ------------------------------------------------------------------------
+                        // Collect all source items with clipboard indicator and update local storage
+                        // ------------------------------------------------------------------------
+                        $('.InputfieldRepeaterItem.in-clipboard').each(function(idx) {
+
+                            // ------------------------------------------------------------------------
+                            // Push current item
+                            // ------------------------------------------------------------------------
+                            sourceItems.push($(this).data('page'));
+
+                            // ------------------------------------------------------------------------
+                            // Remove indicator and enforce reflow, so all animations run synchronously
+                            // ------------------------------------------------------------------------
+                            $(this).removeClass('in-clipboard');
+                            void this.offsetHeight;
+                        });
+
+                        // ------------------------------------------------------------------------
+                        // Remove clipboard from local storage if items are empty
+                        // ------------------------------------------------------------------------
+                        if(sourceItems.length == 0) {
+                            localStorage.removeItem('rmd-clipboard');
+
+                        // ------------------------------------------------------------------------
+                        // Else add animation and indicator and save all items to local storage
+                        // ------------------------------------------------------------------------
+                        } else {
+
+                            // ------------------------------------------------------------------------
+                            // Add animation for all selected items
+                            // ------------------------------------------------------------------------
+                            sourceItems.forEach(function(pageID){
+                                $('.InputfieldRepeaterItem[data-page="' + pageID + '"]').addClass('in-clipboard');
+                            });
+
+                            // ------------------------------------------------------------------------
+                            // Show the alert dialog only when an item is added for the first time
+                            // ------------------------------------------------------------------------
+                            if(itemsAdded && (sourceItems.length == 1) && !pwConfig.config.disableCopyDialog) {
+                                ProcessWire.alert(pwConfig.labels.clipboard);
+                            }
+
+                            // ------------------------------------------------------------------------
+                            // Save all items to clipboard local storage
+                            // ------------------------------------------------------------------------
                             localStorage.setItem('rmd-clipboard', JSON.stringify({
-                                'rmdSourceItem': $repeaterItem.attr('data-page'), 
+                                'rmdSourceItems': sourceItems, 
                                 'rmdAllowedTarget': $repeaterItem.attr('data-rmd-target-field'), 
                                 'rmdSourcePage': $repeaterItem.attr('data-rmd-current-page'), 
                                 'rmdTimestamp': new Date().getTime()
@@ -188,7 +242,7 @@ $(window).on('load focus', function(){
             // ------------------------------------------------------------------------
             var $matrixTarget       = $('li.Inputfield_' + RMD.rmdAllowedTarget + ' p.InputfieldRepeaterMatrixAddItem'), 
                 $rmdButtonWrapper   = $('<div class="InputfieldRepeaterDuplicatePasteWrapper"></div>');
-                $rmdHiddenSourceID  = $('<input type="hidden" name="rmdSourceItem" value="' + RMD.rmdSourceItem + '">');
+                $rmdHiddenSourceID  = $('<input type="hidden" name="rmdSourceItems" value="' + RMD.rmdSourceItems + '">');
                 $rmdHiddenFieldName = $('<input type="hidden" name="rmdFieldName" value="' + RMD.rmdAllowedTarget + '">');
                 $rmdHiddenTargetID  = $('<input type="hidden" name="rmdTargetPage" value="' + currentPageID + '">');
                 $rmdHiddenPaste     = $('<input type="hidden" name="rmdPasteTrigger" value="0">');
@@ -215,11 +269,17 @@ $(window).on('load focus', function(){
             // Bind paste function
             // ------------------------------------------------------------------------
             $('.InputfieldRepeaterDuplicatePaste').bind('click', function(event) {
-                ProcessWire.confirm(pwConfig.labels.confirm, function(){
+                if(!pwConfig.config.disablePasteDialog) {
+                    ProcessWire.confirm(pwConfig.labels.confirm, function(){
+                        localStorage.removeItem('rmd-clipboard');
+                        $('input[name="rmdPasteTrigger"]').val("1");
+                        $('button#submit_save, button#submit_save_unpublished').trigger('click');
+                    });
+                } else {
                     localStorage.removeItem('rmd-clipboard');
                     $('input[name="rmdPasteTrigger"]').val("1");
                     $('button#submit_save, button#submit_save_unpublished').trigger('click');
-                });
+                }
             });
 
         // ------------------------------------------------------------------------
@@ -227,7 +287,7 @@ $(window).on('load focus', function(){
         // ------------------------------------------------------------------------
         } else if(currentPageID != RMD.rmdSourcePage && $('li.Inputfield_' + RMD.rmdAllowedTarget).length > 0 && $('div.InputfieldRepeaterDuplicatePasteWrapper').length > 0) {
 
-            $("input[name='rmdSourceItem']").val(RMD.rmdSourceItem);
+            $("input[name='rmdSourceItems']").val(RMD.rmdSourceItems);
             $("input[name='rmdFieldName']").val(RMD.rmdAllowedTarget);
             $("input[name='rmdTargetPage']").val(currentPageID);
 
