@@ -4,6 +4,7 @@
  * @website www.flipzoom.de
  * @create  2019-03-26
  * @updated 2020-09-17
+ * @updated 2020-10-01
  * @style   Tab size: 4 / Soft tabs: YES
  * ----------------------------------------------------------------------------------
  * @licence
@@ -83,8 +84,10 @@ $(window).on('load', function(){
                 // ------------------------------------------------------------------------
                 // Dont bind events and remove function if source matrix item is a 
                 // nested repeater. Nested repeaters are currently not supported!
+                // Note: the module cannot be loaded if the repeater field ends with the 
+                // name "repeater" or "reapter12", etc.
                 // ------------------------------------------------------------------------
-                if($(this).closest('.InputfieldRepeaterItem').attr('data-rmd-target-field').match(/repeater[\w-]*\b$/g)) {
+                if($(this).closest('.InputfieldRepeaterItem').attr('data-rmd-target-field').match(/repeater[\d-]{2,}\b$/g)) {
                     $(this).remove();
 
                 } else {

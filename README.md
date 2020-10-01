@@ -26,7 +26,13 @@ This module extends the commercial ProModule "[RepeaterMatrix](https://processwi
 - No support for nested repeater items. Currently only first level items can be duplicated. Means a repeater field in a repeater field cannot be duplicated. Workaround: simply duplicate the parent item
 - Dynamic reloading and adding of repeater items cannot be registered. Several interfaces and events from the core are missing. The initialization occurs only once after the page load event
 
+## Attention, please note!
+Nested repeaters cannot be supported technically. Therefore a check is made to prevent this. However, a nested repeater can only be detected if the field name ends for example with ` _repeater1234`. For example, if your MatrixRepeater field is named like this: `content_repeater` or `content_repeater123`, this field is identified as nested and the module does not load. In version 2.0.1 the identification has been changed so that a field ending with the name `repeater` is only detected as nested if at least a two-digit number sequence follows. **But to avoid this problem completely, make sure that your repeater matrix field does NOT end with the name "repeater".**
+
 ### Changelog
+2.0.1
+- Bug fix: Thanks to [@ngrmm](https://processwire.com/talk/profile/3649-ngrmm/) I could discover a bug which causes that the module cannot be loaded if the MatrixRepeater field ends with the name "repeater". The code was adjusted and information about the problem was provided.
+
 2.0.0
 - Feature: Copy multiple items at once! The fundament for copying multiple items was created by [@Autofahrn](https://processwire.com/talk/profile/5384-autofahrn/) - THX!
 - Feature: Optionally you can disable the copy and/or paste dialog

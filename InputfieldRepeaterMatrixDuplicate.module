@@ -6,6 +6,7 @@
  * @website www.flipzoom.de
  * @create  2019-03-26
  * @updated 2020-09-17
+ * @updated 2020-10-01
  * @style   Tab size: 4 / Soft tabs: YES
  * ----------------------------------------------------------------------------------
  * @licence
@@ -44,7 +45,7 @@ class InputfieldRepeaterMatrixDuplicate extends WireData implements Module, Conf
             'summary'   => __('With this module you can duplicate multible RepeaterMatrix-Items from one page to another which has the same matrix field. Please check the Read Me for restrictions.', __FILE__),
             'author'    => 'David Karich - FlipZoom Media Inc.',
             'href'      => 'https://github.com/FlipZoomMedia/InputfieldRepeaterMatrixDuplicate',
-            'version'   => 200,
+            'version'   => 201,
             'autoload'  => 'template=admin',
             'singular'  => true,
             'icon'      => 'clipboard', 
