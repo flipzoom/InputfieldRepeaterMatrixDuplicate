@@ -1,14 +1,15 @@
 /**
- * @author  FlipZoom Media Inc. - David Karich
+ * @author  flipzoom; Media - David Karich
  * @contact David Karich <david.karich@flipzoom.de>
  * @website www.flipzoom.de
  * @create  2019-03-26
  * @updated 2020-09-17
  * @updated 2020-10-01
+ * @updated 2022-05-19
  * @style   Tab size: 4 / Soft tabs: YES
  * ----------------------------------------------------------------------------------
  * @licence
- * Copyright (c) 2020 FlipZoom Media Inc. - David Karich
+ * Copyright (c) 2022 flipzoom; Media  - David Karich
  * Permission is hereby granted, free of charge, to any person obtaining a copy 
  * of this software and associated documentation files (the "Software"), to deal 
  * in the Software without restriction, including without limitation the rights 
@@ -243,13 +244,14 @@ $(window).on('load focus', function(){
             // ------------------------------------------------------------------------
             // Init vars
             // ------------------------------------------------------------------------
-            var $matrixTarget       = $('li.Inputfield_' + RMD.rmdAllowedTarget + ' p.InputfieldRepeaterMatrixAddItem'), 
-                $rmdButtonWrapper   = $('<div class="InputfieldRepeaterDuplicatePasteWrapper"></div>');
-                $rmdHiddenSourceID  = $('<input type="hidden" name="rmdSourceItems" value="' + RMD.rmdSourceItems + '">');
-                $rmdHiddenFieldName = $('<input type="hidden" name="rmdFieldName" value="' + RMD.rmdAllowedTarget + '">');
-                $rmdHiddenTargetID  = $('<input type="hidden" name="rmdTargetPage" value="' + currentPageID + '">');
-                $rmdHiddenPaste     = $('<input type="hidden" name="rmdPasteTrigger" value="0">');
-                $rmdPasteButton     = $('<button type="button" class="ui-button ui-widget InputfieldRepeaterDuplicatePaste">' + pwConfig.labels.paste + '</button>');
+            var $matrixTarget       = $('li.Inputfield_' + RMD.rmdAllowedTarget + ' .InputfieldRepeaterMatrixAddItem'), 
+                $rmdButtonWrapper   = $('<div class="InputfieldRepeaterDuplicatePasteWrapper"></div>'),
+                $rmdHiddenSourceID  = $('<input type="hidden" name="rmdSourceItems" value="' + RMD.rmdSourceItems + '">'),
+                $rmdHiddenFieldName = $('<input type="hidden" name="rmdFieldName" value="' + RMD.rmdAllowedTarget + '">'),
+                $rmdHiddenTargetID  = $('<input type="hidden" name="rmdTargetPage" value="' + currentPageID + '">'),
+                $rmdHiddenPaste     = $('<input type="hidden" name="rmdPasteTrigger" value="0">'),
+                _pasteItemsLabel    = (RMD.rmdSourceItems.length > 1) ? pwConfig.labels.paste_items : pwConfig.labels.paste_item,
+                $rmdPasteButton     = $('<button type="button" class="ui-button ui-widget InputfieldRepeaterDuplicatePaste">' + _pasteItemsLabel + '</button>');
 
             // ------------------------------------------------------------------------
             // Remove old clipboard classes
@@ -266,7 +268,7 @@ $(window).on('load focus', function(){
             $rmdButtonWrapper.prepend($rmdHiddenTargetID);
             $rmdButtonWrapper.prepend($rmdHiddenFieldName);
             $rmdButtonWrapper.prepend($rmdHiddenPaste);
-            $matrixTarget.prepend($rmdButtonWrapper);
+            $rmdButtonWrapper.insertAfter($matrixTarget);
 
             // ------------------------------------------------------------------------
             // Bind paste function

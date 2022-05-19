@@ -1,16 +1,17 @@
 <?php namespace ProcessWire;
 
 /**
- * @author  FlipZoom Media Inc. - David Karich
+ * @author  flipzoom; Media - David Karich
  * @contact David Karich <david.karich@flipzoom.de>
  * @website www.flipzoom.de
  * @create  2019-03-26
  * @updated 2020-09-17
  * @updated 2020-10-01
+ * @updated 2022-05-19
  * @style   Tab size: 4 / Soft tabs: YES
  * ----------------------------------------------------------------------------------
  * @licence
- * Copyright (c) 2020 FlipZoom Media Inc. - David Karich
+ * Copyright (c) 2022 flipzoom; Media - David Karich
  * Permission is hereby granted, free of charge, to any person obtaining a copy 
  * of this software and associated documentation files (the "Software"), to deal 
  * in the Software without restriction, including without limitation the rights 
@@ -43,9 +44,9 @@ class InputfieldRepeaterMatrixDuplicate extends WireData implements Module, Conf
         return array(
             'title'     => __('Repeater Matrix Item Duplicator', __FILE__),
             'summary'   => __('With this module you can duplicate multible RepeaterMatrix-Items from one page to another which has the same matrix field. Please check the Read Me for restrictions.', __FILE__),
-            'author'    => 'David Karich - FlipZoom Media Inc.',
+            'author'    => 'David Karich - flipzoom; Media',
             'href'      => 'https://github.com/FlipZoomMedia/InputfieldRepeaterMatrixDuplicate',
-            'version'   => 201,
+            'version'   => 202,
             'autoload'  => 'template=admin',
             'singular'  => true,
             'icon'      => 'clipboard', 
@@ -243,7 +244,8 @@ class InputfieldRepeaterMatrixDuplicate extends WireData implements Module, Conf
             $this->config->js('InputfieldRepeaterMatrixDuplicate', array(
                 'labels' => array(
                     'duplicate'     => $this->_x('Copy this item to the clipboard to paste into another page?', 'repeater-item-action'), 
-                    'paste'         => $this->_x('Paste item', 'repeater-item-action'), 
+                    'paste_item'    => $this->_x('Paste item', 'repeater-item-action'), 
+                    'paste_items'   => $this->_x('Paste items', 'repeater-item-action'), 
                     'confirm'       => $this->_x('Are you sure you want to paste the item here? This will save the current page and inserts the item at the last position.', 'repeater-item-action'), 
                     'clipboard'     => $this->_x('The repeater item has been copied to the clipboard. Go to another page with the same repeater field and paste it. Note: the current version of the item can only be copied if the page has been saved.', 'repeater-item-action')
                 ), 

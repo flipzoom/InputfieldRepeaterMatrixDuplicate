@@ -29,7 +29,16 @@ This module extends the commercial ProModule "[RepeaterMatrix](https://processwi
 ## Attention, please note!
 Nested repeaters cannot be supported technically. Therefore a check is made to prevent this. However, a nested repeater can only be detected if the field name ends for example with ` _repeater1234`. For example, if your MatrixRepeater field is named like this: `content_repeater` or `content_repeater123`, this field is identified as nested and the module does not load. In version 2.0.1 the identification has been changed so that a field ending with the name `repeater` is only detected as nested if at least a two-digit number sequence follows. **But to avoid this problem completely, make sure that your repeater matrix field does NOT end with the name "repeater".**
 
+## RepeaterMatrix version 0.0.8 can also copy and paste
+Yes, the new beta version 0.0.8 has also received the function to copy and paste items. You don't need to use this module anymore. But you can use it in parallel, because this module still has two advantages: 
+
+- You can copy and paste multiple items at the same time
+- Better usability and visualization
+
 ### Changelog
+2.0.2
+- Enhancement: various minor adjustment to make the module compatible with RepeaterMatrix version 0.0.8 as well
+
 2.0.1
 - Bug fix: Thanks to [@ngrmm](https://processwire.com/talk/profile/3649-ngrmm/) I could discover a bug which causes that the module cannot be loaded if the MatrixRepeater field ends with the name "repeater". The code was adjusted and information about the problem was provided.
 
